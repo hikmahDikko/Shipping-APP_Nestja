@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CreateShippingDTO } from 'src/dto/create-shipping.dto';
+import { GetShippingsFilterDTO } from 'src/dto/get_shipping_filter.dto';
 import { ShippingStatusValidationpipe } from 'src/pipes/task-status-validation.dto';
 import { Ship } from './shipping.entity';
 import { ShippingService } from './shipping.service';
@@ -8,6 +9,11 @@ import { ShippingStatus } from './shipping.status.enum';
 @Controller('shipping')
 export class ShippingController {
     constructor (private shippingService : ShippingService) {}
+
+    @Get()
+    getShippings(@Query(ValidationPipe) filterDTO : GetShippingsFilterDTO)  {
+        return this.shippingService.getShippings(filterDTO);
+    }
 
     @Post()
     @UsePipes(ValidationPipe)

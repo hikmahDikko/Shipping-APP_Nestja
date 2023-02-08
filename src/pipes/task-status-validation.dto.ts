@@ -1,4 +1,5 @@
 import { BadRequestException, PipeTransform } from "@nestjs/common";
+import { GetShippingsFilterDTO } from "src/dto/get_shipping_filter.dto";
 import { ShippingStatus } from "../shipping/shipping.status.enum";
 
 export class  ShippingStatusValidationpipe implements PipeTransform{
@@ -18,7 +19,7 @@ export class  ShippingStatusValidationpipe implements PipeTransform{
         return value;
     }
 
-    private isStatusValid(status : any) {
+    private isStatusValid(status) {
         const idx = this.allowedStatus.indexOf(status);
         return idx !== -1;
     }

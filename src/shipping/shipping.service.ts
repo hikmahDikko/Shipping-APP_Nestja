@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateShippingDTO } from 'src/dto/create-shipping.dto';
-import { Repository } from 'typeorm';
+import { GetShippingsFilterDTO } from 'src/dto/get_shipping_filter.dto';
+import { ShippingStatusValidationpipe } from 'src/pipes/task-status-validation.dto';
+import { Repository     } from 'typeorm';
 import { Ship } from './shipping.entity';
 import { ShippingStatus } from './shipping.status.enum';
 
@@ -12,6 +14,24 @@ export class ShippingService {
         private shipRepository : Repository<Ship>
     ) {}
     
+    async getShippings(filterDTO : GetShippingsFilterDTO) : Promise<Ship[]> {
+        const { status, search } = filterDTO;
+        const query = this.shipRepository.createQueryBuilder('ship');
+
+        if(status) {
+            query.andWhere('ship.status = :status', {status});
+        }
+
+        if(search) {
+            query.andWhere('ship.address LIKE :search OR ship.fullName LIKE :search', {search : `%${search}%` })
+        }
+
+        const shippings = await query.getMany();
+
+        return shippings;
+    }
+    
+
     async getShippingById(id : number) : Promise<Ship>{
         const found = await this.shipRepository.findOneBy({id});
 
