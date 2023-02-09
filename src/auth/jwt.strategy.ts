@@ -3,8 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtPayload } from 'jsonwebtoken';
 import { Strategy, ExtractJwt } from 'passport-jwt';
+import * as config from 'config';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+
+const jwtConfig = config.get('jwt');
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
     constructor(
@@ -13,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     ){
         super({
             jwtFromRequest : ExtractJwt.fromAuthHeaderAsBearerToken(),
-            secretOrKey : "hikmat",
+            secretOrKey : process.env.JWT_SECRET || jwtConfig.secret,
         });
     }
 

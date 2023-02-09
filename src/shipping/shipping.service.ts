@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
 import { CreateShippingDTO } from 'src/dto/create-shipping.dto';
@@ -9,6 +9,7 @@ import { ShippingStatus } from './shipping.status.enum';
 
 @Injectable()
 export class ShippingService {
+    private logger = new Logger('ShippingService')
     constructor(
         @InjectRepository(Ship)
         private shipRepository : Repository<Ship>
@@ -28,9 +29,14 @@ export class ShippingService {
             query.andWhere('ship.address LIKE :search OR ship.fullName LIKE :search', {search : `%${search}%` })
         }
 
-        const shippings = await query.getMany();
+        try {
+            const shippings = await query.getMany();
+            return shippings;
+        } catch (error) {
+            this.logger.error(`failed to get shippings for user "${user.username}", Filters : ${JSON.stringify(filterDTO)},`, error.stack)
+            throw new InternalServerErrorException();
+        }
 
-        return shippings;
     }
     
 
@@ -55,10 +61,15 @@ export class ShippingService {
         data.user = user;
         data.status = ShippingStatus.SENT;
 
-        await data.save()
-
-        delete data.user;
-        return data;
+        try {
+            await data.save()
+    
+            delete data.user;
+            return data;
+        } catch (error) {
+            this.logger.error(`failed to create shipping for user "${user.username}", Data : ${JSON.stringify(createShippingDTO)},`, error.stack)
+            throw new InternalServerErrorException();
+        }
     }
 
     async deleteShipping(id : number, user : User) : Promise<void>{

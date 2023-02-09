@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Logger, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/auth/get-user.decorator';
 import { User } from 'src/auth/user.entity';
@@ -12,6 +12,7 @@ import { ShippingStatus } from './shipping.status.enum';
 @Controller('shipping')
 @UseGuards(AuthGuard())
 export class ShippingController {
+    private logger = new Logger('ShippingController')
     constructor (private shippingService : ShippingService) {}
 
     @Get()
@@ -19,6 +20,7 @@ export class ShippingController {
         @Query(ValidationPipe) filterDTO : GetShippingsFilterDTO,
         @GetUser() user : User
     )  {
+        this.logger.verbose(`User "${user.username}" retrieving all shippings. Filters : ${JSON.stringify(filterDTO)}`)
         return this.shippingService.getShippings(filterDTO, user);
     }
 
@@ -28,6 +30,7 @@ export class ShippingController {
         @Body() createShippingDTO : CreateShippingDTO,
         @GetUser() user : User,
     ) : Promise<Ship>{
+        this.logger.verbose(`User "${user.username}" creating a new shipping. Data : ${JSON.stringify(createShippingDTO)}`)
         return this.shippingService.createShipping(createShippingDTO, user)
     }
 
