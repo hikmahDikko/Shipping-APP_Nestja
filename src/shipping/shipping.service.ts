@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/auth/user.entity';
 import { CreateShippingDTO } from 'src/dto/create-shipping.dto';
 import { GetShippingsFilterDTO } from 'src/dto/get_shipping_filter.dto';
-import { ShippingStatusValidationpipe } from 'src/pipes/task-status-validation.dto';
 import { Repository     } from 'typeorm';
 import { Ship } from './shipping.entity';
 import { ShippingStatus } from './shipping.status.enum';
