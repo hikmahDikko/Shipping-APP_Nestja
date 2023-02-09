@@ -39,17 +39,22 @@ export class AuthService {
 
     async signIn(createUserDto : CreateUserDTO) : Promise<{ accessToken : string }>{
         const { username, password } = createUserDto;
-        const user = await this.userRepository.findOneBy({username});
-        const result = await bcrypt.compare(password, user.password);
-
-        if (!user && !result) {
-            throw new UnauthorizedException('Invalid credentials');
+        
+        try {
+            const user = await this.userRepository.findOneBy({username});
+            const result = await bcrypt.compare(password, user.password);
+            if (!user && !result) {
+                throw new UnauthorizedException('Invalid credentials');
+            }   
+    
+            const payload = { username };
+            const accessToken = await this.jwtService.sign(payload);
+    
+            return { accessToken };
+        } catch (error) {
+            throw new InternalServerErrorException()
         }
 
-        const payload = { username };
-        const accessToken = await this.jwtService.sign(payload);
-
-        return { accessToken };
     }
 
     private async hashPassword(password : string, salt : string) : Promise<string> {
