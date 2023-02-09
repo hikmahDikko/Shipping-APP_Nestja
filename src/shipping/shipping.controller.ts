@@ -39,8 +39,10 @@ export class ShippingController {
     }
  
     @Delete('/:id')
-    deleteShipping(@Param('id', ParseIntPipe) id : number) : Promise<void> {
-        return this.shippingService.deleteShipping(id);
+    deleteShipping(
+        @Param('id', ParseIntPipe) id : number,
+        @GetUser() user : User) : Promise<void> {
+        return this.shippingService.deleteShipping(id, user);
     }
 
     @Patch('/:id')

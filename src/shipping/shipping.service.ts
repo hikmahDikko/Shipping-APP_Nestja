@@ -62,8 +62,8 @@ export class ShippingService {
         return data;
     }
 
-    async deleteShipping(id : number) : Promise<void>{
-        const result = await this.shipRepository.delete(id);
+    async deleteShipping(id : number, user : User) : Promise<void>{
+        const result = await this.shipRepository.delete({id, userId : user.id});
 
         if(result.affected === 0) {
             throw new NotFoundException(`Shipping with id ${id} is not found`);
@@ -81,6 +81,4 @@ export class ShippingService {
         await user.save();
         return user;
     }
-
-
 }
