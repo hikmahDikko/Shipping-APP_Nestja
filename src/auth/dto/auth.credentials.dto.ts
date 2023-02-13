@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString, MinLength, MaxLength, MATCHES } from "class-validator";
 
 export class CreateUserDTO {
-    @IsNotEmpty()
     @IsString()
+    @IsNotEmpty()
     @MinLength(4)
     @MaxLength(20)
     username : string;
